@@ -104,9 +104,11 @@ client.on("message", async (message) => {
 // bot bir server'a katıldığında yapılacaklar
 client.on('guildCreate', async guild => {
 // guildID vb. veritabanına ekleme
-  await Guild.create({
-    guildID: guild.id,
-    owner: guild.ownerID,
-    expireTime: null
-  })
+  const isGuildExist = await Guild.findOne({guildID: guild.id})
+  if (!isGuildExist)
+    Guild.create({
+      guildID: guild.id,
+      owner: guild.ownerID,
+      expireTime: null
+    })
 })

@@ -167,6 +167,7 @@
 		"description": "Redeem a code to subscription"
 	},
 	"subduration": {
-		"description": "Shows the subscription duration"
+		"description": "Shows the subscription duration",
+		"result": "Your subscription will expire in {time}"
 	}
 }
