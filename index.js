@@ -6,8 +6,8 @@ const {readdirSync} = require("fs")
 const {join} = require("path")
 const {TOKEN, PREFIX} = require("./util/Util")
 const i18n = require("./util/i18n")
-// const Guild = require("./models/Guild")
-const db = require("./db/index").connectDB()
+const {Guild} = require("./models/index")
+require("./db/index").connectDB()
 
 const client = new Client({
   disableMentions: "everyone",
@@ -82,30 +82,19 @@ client.on("message", async (message) => {
 
   try {
     // komut redeem mi kontrol et değilse expire time ve ratelimit kontrolü yap
-    // if (command.name === "redeem") command.execute(message, args)
-    // else {
-    //   const guild = await Guild.findOne({guildID: message.guild.id})
-    //   if (!guild.expireTime) {
-    //     if (guild.rateLimit < 5) {
-    //       await Guild.updateOne({guildID: message.guild.id}, {rateLimit: guild.rateLimit + 1})
-    //       command.execute(message, args)
-    //     } else return message.reply(i18n.__mf("common.rateLimit"))
-    //   } else {
-    //     if (guild.expireTime > Date.now()) command.execute(message, args)
-    //     else return message.reply(i18n.__mf("common.expired"))
-    //   }
-    // }
+    if (command.name === "redeem") command.execute(message, args)
+    else {
+      const guild = await Guild.findOne({guildID: message.guild.id})
+      const trial = (Date.now() - new Date(guild.createdAt)) / 1000 / 60 / 60
+      if (!guild.expireTime) {
+        if (trial < 72) command.execute(message, args)
+        else return message.reply(i18n.__mf("common.rateLimit"))
+      } else {
+        if (guild.expireTime > Date.now()) command.execute(message, args)
+        else return message.reply(i18n.__mf("common.expired"))
+      }
+    }
 
-    /*
-        
-        check if command is redeem, if so, execute command
-        else check if guild has a expire time,
-        if no, check if ratelimit is less than 5, execute command
-        if yes, check expire time, if greater than Date.now(), execute command
-        else return
-    */
-
-    command.execute(message, args)
   } catch (error) {
     console.error(error)
     message.reply(i18n.__("common.errorCommand")).catch(console.error)
@@ -114,11 +103,10 @@ client.on("message", async (message) => {
 
 // bot bir server'a katıldığında yapılacaklar
 client.on('guildCreate', async guild => {
-//guildID vb. veritabanına ekleme
-//   await new Guild({
-//     guildID: guild.id,
-//     owner: guild.ownerID,
-//     expireTime: null,
-//     rateLimit: 0
-//   }).save()
+// guildID vb. veritabanına ekleme
+  await Guild.create({
+    guildID: guild.id,
+    owner: guild.ownerID,
+    expireTime: null
+  })
 })
