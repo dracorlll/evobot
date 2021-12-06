@@ -1,8 +1,7 @@
 /config.json
 /.idea
 /.vscode
-/sounds/**
-!/sounds/putmusichere.mp3
+deploy.sh
 
 # Logs
 logs
