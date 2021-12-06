@@ -6,15 +6,8 @@ const i18n = require("../util/i18n")
 module.exports = {
   async play(song, message, guild) {
     const {SOUNDCLOUD_CLIENT_ID} = require("../util/Util")
-    let config
 
-    try {
-      config = require("../config.json")
-    } catch (error) {
-      config = null
-    }
-
-    const PRUNING = config ? config.PRUNING : process.env.PRUNING
+    const PRUNING = guild.pruning
 
     const queue = message.client.queue.get(message.guild.id)
 
@@ -24,7 +17,10 @@ module.exports = {
         queue.channel.leave()
         !PRUNING && queue.textChannel.send(i18n.__({phrase: "play.leaveChannel", locale: guild.locale}))
       }, STAY_TIME * 1000)
-      !PRUNING && queue.textChannel.send(i18n.__({phrase: "play.queueEnded", locale: guild.locale})).catch(console.error)
+      !PRUNING && queue.textChannel.send(i18n.__({
+        phrase: "play.queueEnded",
+        locale: guild.locale
+      })).catch(console.error)
 
       return message.client.queue.delete(message.guild.id)
     }
@@ -114,7 +110,10 @@ module.exports = {
           reaction.users.remove(user).catch(console.error)
           if (!canModifyQueue(member)) return i18n.__({phrase: "common.errorNotChannel", locale: guild.locale})
           queue.connection.dispatcher.end()
-          queue.textChannel.send(i18n.__mf({phrase: "play.skipSong", locale: guild.locale}, {author: user})).catch(console.error)
+          queue.textChannel.send(i18n.__mf({
+            phrase: "play.skipSong",
+            locale: guild.locale
+          }, {author: user})).catch(console.error)
           collector.stop()
           break
 
@@ -124,11 +123,17 @@ module.exports = {
           if (queue.playing) {
             queue.playing = !queue.playing
             queue.connection.dispatcher.pause(true)
-            queue.textChannel.send(i18n.__mf({phrase: "play.pauseSong", locale: guild.locale}, {author: user})).catch(console.error)
+            queue.textChannel.send(i18n.__mf({
+              phrase: "play.pauseSong",
+              locale: guild.locale
+            }, {author: user})).catch(console.error)
           } else {
             queue.playing = !queue.playing
             queue.connection.dispatcher.resume()
-            queue.textChannel.send(i18n.__mf({phrase: "play.resumeSong", locale: guild.locale}, {author: user})).catch(console.error)
+            queue.textChannel.send(i18n.__mf({
+              phrase: "play.resumeSong",
+              locale: guild.locale
+            }, {author: user})).catch(console.error)
           }
           break
 
@@ -138,10 +143,16 @@ module.exports = {
           queue.muted = !queue.muted
           if (queue.muted) {
             queue.connection.dispatcher.setVolumeLogarithmic(0)
-            queue.textChannel.send(i18n.__mf({phrase: "play.mutedSong", locale: guild.locale}, {author: user})).catch(console.error)
+            queue.textChannel.send(i18n.__mf({
+              phrase: "play.mutedSong",
+              locale: guild.locale
+            }, {author: user})).catch(console.error)
           } else {
             queue.connection.dispatcher.setVolumeLogarithmic(queue.volume / 100)
-            queue.textChannel.send(i18n.__mf({phrase: "play.unmutedSong", locale: guild.locale}, {author: user})).catch(console.error)
+            queue.textChannel.send(i18n.__mf({
+              phrase: "play.unmutedSong",
+              locale: guild.locale
+            }, {author: user})).catch(console.error)
           }
           break
 
@@ -152,7 +163,10 @@ module.exports = {
           queue.volume = Math.max(queue.volume - 10, 0)
           queue.connection.dispatcher.setVolumeLogarithmic(queue.volume / 100)
           queue.textChannel
-            .send(i18n.__mf({phrase: "play.decreasedVolume", locale: guild.locale}, {author: user, volume: queue.volume}))
+            .send(i18n.__mf({phrase: "play.decreasedVolume", locale: guild.locale}, {
+              author: user,
+              volume: queue.volume
+            }))
             .catch(console.error)
           break
 
@@ -163,7 +177,10 @@ module.exports = {
           queue.volume = Math.min(queue.volume + 10, 100)
           queue.connection.dispatcher.setVolumeLogarithmic(queue.volume / 100)
           queue.textChannel
-            .send(i18n.__mf({phrase: "play.increasedVolume", locale: guild.locale}, {author: user, volume: queue.volume}))
+            .send(i18n.__mf({phrase: "play.increasedVolume", locale: guild.locale}, {
+              author: user,
+              volume: queue.volume
+            }))
             .catch(console.error)
           break
 
@@ -175,7 +192,10 @@ module.exports = {
             .send(
               i18n.__mf({phrase: "play.loopSong", locale: guild.locale}, {
                 author: user,
-                loop: queue.loop ? i18n.__({phrase: "common.on", locale: guild.locale}) : i18n.__({phrase: "common.off", locale: guild.locale})
+                loop: queue.loop ? i18n.__({phrase: "common.on", locale: guild.locale}) : i18n.__({
+                  phrase: "common.off",
+                  locale: guild.locale
+                })
               })
             )
             .catch(console.error)
@@ -186,7 +206,7 @@ module.exports = {
           if (!canModifyQueue(member)) return i18n.__({phrase: "common.errorNotChannel", locale: guild.locale})
 
           let songs = queue.songs
-          for (let i = songs.length - 1;i > 1;i--) {
+          for (let i = songs.length - 1; i > 1; i--) {
             let j = 1 + Math.floor(Math.random() * i);
             [songs[i], songs[j]] = [songs[j], songs[i]]
           }
@@ -201,7 +221,10 @@ module.exports = {
           reaction.users.remove(user).catch(console.error)
           if (!canModifyQueue(member)) return i18n.__({phrase: "common.errorNotChannel", locale: guild.locale})
           queue.songs = []
-          queue.textChannel.send(i18n.__mf({phrase: "play.stopSong", locale: guild.locale}, {author: user})).catch(console.error)
+          queue.textChannel.send(i18n.__mf({
+            phrase: "play.stopSong",
+            locale: guild.locale
+          }, {author: user})).catch(console.error)
           try {
             queue.connection.dispatcher.end()
           } catch (error) {

@@ -7,13 +7,15 @@ const {join} = require("path")
 const {TOKEN, PREFIX} = require("./util/Util")
 const i18n = require("./util/i18n")
 const {Guild} = require("./models/index")
+const disbut = require('discord-buttons')
+
 require("./db/index").connectDB()
 
 const client = new Client({
   disableMentions: "everyone",
   restTimeOffset: 0
 })
-
+disbut(client)
 client.login(TOKEN)
 client.commands = new Collection()
 client.prefix = PREFIX
@@ -74,7 +76,10 @@ client.on("message", async (message) => {
     if (now < expirationTime) {
       const timeLeft = (expirationTime - now) / 1000
       return message.reply(
-        i18n.__mf({phrase: "common.cooldownMessage", locale: guild.locale}, {time: timeLeft.toFixed(1), name: command.name})
+        i18n.__mf({phrase: "common.cooldownMessage", locale: guild.locale}, {
+          time: timeLeft.toFixed(1),
+          name: command.name
+        })
       )
     }
   }
@@ -115,9 +120,8 @@ const guildCreate = async guild => {
   return Guild.create({
     guildID: guild.id,
     owner: guild.ownerID,
-    expireTime: null
+    expireTime: null,
+    locale: "en",
+    pruning: false
   })
 }
-
-
-

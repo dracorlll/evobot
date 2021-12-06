@@ -174,5 +174,11 @@
   "subduration": {
     "description": "Shows the subscription duration",
     "result": "Your subscription will expire in {time}"
+  },
+  "language": {
+    "placeholder": "Select a language",
+    "description": "Change the language of the bot",
+    "title": "Please select a language below",
+    "result": "Language changed"
   }
 }

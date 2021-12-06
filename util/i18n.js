@@ -1,4 +1,3 @@
-const {LOCALE} = require("./Util");
 const {join} = require("path");
 const i18n = require("i18n");
 
@@ -50,7 +49,5 @@ i18n.configure({
     disable: false
   }
 });
-
-i18n.setLocale(LOCALE);
 
 module.exports = i18n;

@@ -1,14 +1,14 @@
-const mongoose = require("mongoose");
+const mongoose = require("mongoose")
 
 const guildSchema = new mongoose.Schema(
   {
     guildID: {
       type: String,
-      required: true,
+      required: true
     },
     owner: {
       type: String,
-      required: true,
+      required: true
     },
     expireTime: {
       type: Number
@@ -20,11 +20,15 @@ const guildSchema = new mongoose.Schema(
     locale: {
       type: String,
       default: "en"
+    },
+    pruning: {
+      type: Boolean,
+      default: false
     }
   },
   {
-    timestamps: true,
+    timestamps: true
   }
-);
+)
 
-module.exports = mongoose.model("guild", guildSchema);
+module.exports = mongoose.model("guild", guildSchema)
