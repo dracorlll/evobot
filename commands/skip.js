@@ -1,17 +1,17 @@
-const { canModifyQueue } = require("../util/Util");
+const {canModifyQueue} = require("../util/Util");
 const i18n = require("../util/i18n");
 
 module.exports = {
   name: "skip",
   aliases: ["s"],
-  description: i18n.__("skip.description"),
-  execute(message) {
+  description: "skip.description",
+  execute(message, args, guild) {
     const queue = message.client.queue.get(message.guild.id);
-    if (!queue) return message.reply(i18n.__("skip.errorNotQueue")).catch(console.error);
-    if (!canModifyQueue(message.member)) return i18n.__("common.errorNotChannel");
+    if (!queue) return message.reply(i18n.__({phrase: "skip.errorNotQueue", locale: guild.locale})).catch(console.error);
+    if (!canModifyQueue(message.member)) return i18n.__({phrase: "common.errorNotChannel", locale: guild.locale});
 
     queue.playing = true;
     queue.connection.dispatcher.end();
-    queue.textChannel.send(i18n.__mf("skip.result", { author: message.author })).catch(console.error);
+    queue.textChannel.send(i18n.__mf({phrase: "skip.result", locale: guild.locale}, {author: message.author})).catch(console.error);
   }
 };

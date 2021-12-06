@@ -5,14 +5,14 @@ const MONTH = 2592000000
 
 module.exports = {
   name: "redeem",
-  description: i18n.__("redeem.description"),
-  async execute(message, args) {
+  description: "redeem.description",
+  async execute(message, args, guild) {
     const redeem = await Redeem.findOne({code: args[0], redeemed: false})
     const embedRedeem = new MessageEmbed()
     if (!redeem) {
       embedRedeem
-        .setTitle(i18n.__("redeem.title"))
-        .setDescription(i18n.__("redeem.notFound"))
+        .setTitle(i18n.__({phrase: "redeem.title", locale: guild.locale}))
+        .setDescription(i18n.__({phrase: "redeem.notFound", locale: guild.locale}))
         .setColor("#ff0000")
     } else {
       await Redeem.updateOne({
@@ -25,8 +25,8 @@ module.exports = {
       })
       await Guild.updateOne({guildID: message.guild.id}, {expireTime: Date.now() + redeem.time * MONTH})
       embedRedeem
-        .setTitle(i18n.__("redeem.title"))
-        .setDescription(i18n.__mf("redeem.success", {
+        .setTitle(i18n.__({phrase: "redeem.title", locale: guild.locale}))
+        .setDescription(i18n.__mf({phrase: "redeem.success", locale: guild.locale}, {
           time: new Date(Date.now() + redeem.time * MONTH).toLocaleDateString()
         }))
         .setColor("#00ff00")

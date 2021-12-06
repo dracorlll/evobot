@@ -16,6 +16,10 @@ const guildSchema = new mongoose.Schema(
     rateLimit: {
       type: Number,
       default: 0
+    },
+    locale: {
+      type: String,
+      default: "en"
     }
   },
   {

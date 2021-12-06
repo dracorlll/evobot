@@ -1,37 +1,36 @@
 const i18n = require("../util/i18n");
-const { play } = require("../include/play");
+const {play} = require("../include/play");
 const ytdl = require("ytdl-core");
 const YouTubeAPI = require("simple-youtube-api");
 const scdl = require("soundcloud-downloader").default;
 const https = require("https");
-const { YOUTUBE_API_KEY, SOUNDCLOUD_CLIENT_ID, DEFAULT_VOLUME } = require("../util/Util");
+const {YOUTUBE_API_KEY, SOUNDCLOUD_CLIENT_ID, DEFAULT_VOLUME} = require("../util/Util");
 const youtube = new YouTubeAPI(YOUTUBE_API_KEY);
 
 module.exports = {
   name: "play",
   cooldown: 3,
   aliases: ["p"],
-  description: i18n.__("play.description"),
-  async execute(message, args) {
-    const { channel } = message.member.voice;
-
+  description: "play.description",
+  async execute(message, args, guild) {
+    const {channel} = message.member.voice;
     const serverQueue = message.client.queue.get(message.guild.id);
 
-    if (!channel) return message.reply(i18n.__("play.errorNotChannel")).catch(console.error);
+    if (!channel) return message.reply(i18n.__({phrase: "play.errorNotChannel", locale: guild.locale})).catch(console.error);
 
     if (serverQueue && channel !== message.guild.me.voice.channel)
       return message
-        .reply(i18n.__mf("play.errorNotInSameChannel", { user: message.client.user }))
+        .reply(i18n.__mf({phrase: "play.errorNotInSameChannel", locale: guild.locale}, {user: message.client.user}))
         .catch(console.error);
 
     if (!args.length)
       return message
-        .reply(i18n.__mf("play.usageReply", { prefix: message.client.prefix }))
+        .reply(i18n.__mf({phrase: "play.usageReply", locale: guild.locale}, {prefix: message.client.prefix}))
         .catch(console.error);
 
     const permissions = channel.permissionsFor(message.client.user);
-    if (!permissions.has("CONNECT")) return message.reply(i18n.__("play.missingPermissionConnect"));
-    if (!permissions.has("SPEAK")) return message.reply(i18n.__("play.missingPermissionSpeak"));
+    if (!permissions.has("CONNECT")) return message.reply(i18n.__({phrase: "play.missingPermissionConnect", locale: guild.locale}));
+    if (!permissions.has("SPEAK")) return message.reply(i18n.__({phrase: "play.missingPermissionSpeak", locale: guild.locale}));
 
     const search = args.join(" ");
     const videoPattern = /^(https?:\/\/)?(www\.)?(m\.|music\.)?(youtube\.com|youtu\.?be)\/.+$/gi;
@@ -43,18 +42,18 @@ module.exports = {
 
     // Start the playlist if playlist url was provided
     if (!videoPattern.test(args[0]) && playlistPattern.test(args[0])) {
-      return message.client.commands.get("playlist").execute(message, args);
+      return message.client.commands.get("playlist").execute(message, args, guild);
     } else if (scdl.isValidUrl(url) && url.includes("/sets/")) {
-      return message.client.commands.get("playlist").execute(message, args);
+      return message.client.commands.get("playlist").execute(message, args, guild);
     }
 
     if (mobileScRegex.test(url)) {
       try {
         https.get(url, function (res) {
           if (res.statusCode == "302") {
-            return message.client.commands.get("play").execute(message, [res.headers.location]);
+            return message.client.commands.get("play").execute(message, [res.headers.location], guild);
           } else {
-            return message.reply(i18n.__("play.songNotFound")).catch(console.error);
+            return message.reply(i18n.__({phrase: "play.songNotFound", locale: guild.locale})).catch(console.error);
           }
         });
       } catch (error) {
@@ -104,10 +103,10 @@ module.exports = {
       }
     } else {
       try {
-        const results = await youtube.searchVideos(search, 1, { part: "id" });
+        const results = await youtube.searchVideos(search, 1, {part: "id"});
 
         if (!results.length) {
-          message.reply(i18n.__("play.songNotFound")).catch(console.error);
+          message.reply(i18n.__({phrase: "play.songNotFound", locale: guild.locale})).catch(console.error);
           return;
         }
 
@@ -119,7 +118,7 @@ module.exports = {
         };
       } catch (error) {
         console.error(error);
-        
+
         if (error.message.includes("410")) {
           return message.reply("Video is age restricted, private or unavailable").catch(console.error);
         } else {
@@ -131,7 +130,7 @@ module.exports = {
     if (serverQueue) {
       serverQueue.songs.push(song);
       return serverQueue.textChannel
-        .send(i18n.__mf("play.queueAdded", { title: song.title, author: message.author }))
+        .send(i18n.__mf({phrase: "play.queueAdded", locale: guild.locale}, {title: song.title, author: message.author}))
         .catch(console.error);
     }
 
@@ -141,12 +140,12 @@ module.exports = {
     try {
       queueConstruct.connection = await channel.join();
       await queueConstruct.connection.voice.setSelfDeaf(true);
-      play(queueConstruct.songs[0], message);
+      play(queueConstruct.songs[0], message, guild);
     } catch (error) {
       console.error(error);
       message.client.queue.delete(message.guild.id);
       await channel.leave();
-      return message.channel.send(i18n.__mf("play.cantJoinChannel", { error: error })).catch(console.error);
+      return message.channel.send(i18n.__mf({phrase: "play.cantJoinChannel", locale: guild.locale}, {error: error})).catch(console.error);
     }
   }
 };

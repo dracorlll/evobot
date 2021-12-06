@@ -4,11 +4,11 @@ const {Guild} = require("../models/index")
 module.exports = {
   name: "subduration",
   aliases: ["sub", "duration"],
-  description: i18n.__("subduration.description"),
-  async execute(message) {
-    const guild = await Guild.findOne({guildID: message.guild.id})
+  description: "subduration.description",
+  async execute(message, args, guild) {
+    //const guild = await Guild.findOne({guildID: message.guild.id})
     message
-      .reply(i18n.__mf("subduration.result", {time: new Date(guild.expireTime).toLocaleDateString()}))
+      .reply(i18n.__mf({phrase: "subduration.result", locale: guild.locale}, {time: new Date(guild.expireTime).toLocaleDateString()}))
       .catch(console.error)
   }
 }

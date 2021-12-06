@@ -1,26 +1,26 @@
-const { MessageEmbed } = require("discord.js");
+const {MessageEmbed} = require("discord.js");
 const lyricsFinder = require("lyrics-finder");
 const i18n = require("../util/i18n");
 
 module.exports = {
   name: "lyrics",
   aliases: ["ly"],
-  description: i18n.__("lyrics.description"),
-  async execute(message) {
+  description: "lyrics.description",
+  async execute(message, args, guild) {
     const queue = message.client.queue.get(message.guild.id);
-    if (!queue) return message.channel.send(i18n.__("lyrics.errorNotQueue")).catch(console.error);
+    if (!queue) return message.channel.send(i18n.__({phrase: "lyrics.errorNotQueue", locale: guild.locale})).catch(console.error);
 
     let lyrics = null;
     const title = queue.songs[0].title;
     try {
       lyrics = await lyricsFinder(queue.songs[0].title, "");
-      if (!lyrics) lyrics = i18n.__mf("lyrics.lyricsNotFound", { title: title });
+      if (!lyrics) lyrics = i18n.__mf({phrase: "lyrics.lyricsNotFound", locale: guild.locale}, {title: title});
     } catch (error) {
-      lyrics = i18n.__mf("lyrics.lyricsNotFound", { title: title });
+      lyrics = i18n.__mf({phrase: "lyrics.lyricsNotFound", locale: guild.locale}, {title: title});
     }
 
     let lyricsEmbed = new MessageEmbed()
-      .setTitle(i18n.__mf("lyrics.embedTitle", { title: title }))
+      .setTitle(i18n.__mf({phrase: "lyrics.embedTitle", locale: guild.locale}, {title: title}))
       .setDescription(lyrics)
       .setColor("#F8AA2A")
       .setTimestamp();

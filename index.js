@@ -55,12 +55,14 @@ client.on("message", async (message) => {
   const command =
     client.commands.get(commandName) ||
     client.commands.find((cmd) => cmd.aliases && cmd.aliases.includes(commandName))
-
   if (!command) return
 
   if (!cooldowns.has(command.name)) {
     cooldowns.set(command.name, new Collection())
   }
+
+  let guild = await Guild.findOne({guildID: message.guild.id})
+  if (!guild) guild = await guildCreate(message.guild)
 
   const now = Date.now()
   const timestamps = cooldowns.get(command.name)
@@ -72,7 +74,7 @@ client.on("message", async (message) => {
     if (now < expirationTime) {
       const timeLeft = (expirationTime - now) / 1000
       return message.reply(
-        i18n.__mf("common.cooldownMessage", {time: timeLeft.toFixed(1), name: command.name})
+        i18n.__mf({phrase: "common.cooldownMessage", locale: guild.locale}, {time: timeLeft.toFixed(1), name: command.name})
       )
     }
   }
@@ -82,33 +84,40 @@ client.on("message", async (message) => {
 
   try {
     // komut redeem mi kontrol et değilse expire time ve ratelimit kontrolü yap
-    if (command.name === "redeem") command.execute(message, args)
+    if (command.name === "redeem") command.execute(message, args, guild)
     else {
-      const guild = await Guild.findOne({guildID: message.guild.id})
       const trial = (Date.now() - new Date(guild.createdAt)) / 1000 / 60 / 60
       if (!guild.expireTime) {
-        if (trial < 72) command.execute(message, args)
-        else return message.reply(i18n.__mf("common.rateLimit"))
+
+        if (trial < 72) command.execute(message, args, guild)
+        else return message.reply(i18n.__mf({phrase: "common.rateLimit", locale: guild.locale}))
       } else {
-        if (guild.expireTime > Date.now()) command.execute(message, args)
-        else return message.reply(i18n.__mf("common.expired"))
+        if (guild.expireTime > Date.now()) command.execute(message, args, guild)
+        else return message.reply(i18n.__mf({phrase: "common.expired", locale: guild.locale}))
       }
     }
 
   } catch (error) {
     console.error(error)
-    message.reply(i18n.__("common.errorCommand")).catch(console.error)
+    message.reply(i18n.__({phrase: "common.errorCommand", locale: guild.locale})).catch(console.error)
   }
 })
 
 // bot bir server'a katıldığında yapılacaklar
 client.on('guildCreate', async guild => {
-// guildID vb. veritabanına ekleme
+  // guildID vb. veritabanına ekleme
   const isGuildExist = await Guild.findOne({guildID: guild.id})
   if (!isGuildExist)
-    Guild.create({
-      guildID: guild.id,
-      owner: guild.ownerID,
-      expireTime: null
-    })
+    return guildCreate(guild)
 })
+
+const guildCreate = async guild => {
+  return Guild.create({
+    guildID: guild.id,
+    owner: guild.ownerID,
+    expireTime: null
+  })
+}
+
+
+

@@ -1,26 +1,26 @@
-const { MessageEmbed } = require("discord.js");
+const {MessageEmbed} = require("discord.js");
 const YouTubeAPI = require("simple-youtube-api");
-const { YOUTUBE_API_KEY } = require("../util/Util");
+const {YOUTUBE_API_KEY} = require("../util/Util");
 const youtube = new YouTubeAPI(YOUTUBE_API_KEY);
 const i18n = require("../util/i18n");
 
 module.exports = {
   name: "search",
-  description: i18n.__("search.description"),
-  async execute(message, args) {
+  description: "search.description",
+  async execute(message, args, guild) {
     if (!args.length)
       return message
-        .reply(i18n.__mf("search.usageReply", { prefix: message.client.prefix, name: module.exports.name }))
+        .reply(i18n.__mf({phrase: "search.usageReply", locale: guild.locale}, {prefix: message.client.prefix, name: module.exports.name}))
         .catch(console.error);
-    if (message.channel.activeCollector) return message.reply(i18n.__("search.errorAlreadyCollector"));
+    if (message.channel.activeCollector) return message.reply(i18n.__({phrase: "search.errorAlreadyCollector", locale: guild.locale}));
     if (!message.member.voice.channel)
-      return message.reply(i18n.__("search.errorNotChannel")).catch(console.error);
+      return message.reply(i18n.__({phrase: "search.errorNotChannel", locale: guild.locale})).catch(console.error);
 
     const search = args.join(" ");
 
     let resultsEmbed = new MessageEmbed()
-      .setTitle(i18n.__("search.resultEmbedTitle"))
-      .setDescription(i18n.__mf("search.resultEmbedDesc", { search: search }))
+      .setTitle(i18n.__({phrase: "search.resultEmbedTitle", locale: guild.locale}))
+      .setDescription(i18n.__mf({phrase: "search.resultEmbedDesc", locale: guild.locale}, {search: search}))
       .setColor("#F8AA2A");
 
     try {
@@ -35,7 +35,7 @@ module.exports = {
       }
 
       message.channel.activeCollector = true;
-      const response = await message.channel.awaitMessages(filter, { max: 1, time: 30000, errors: ["time"] });
+      const response = await message.channel.awaitMessages(filter, {max: 1, time: 30000, errors: ["time"]});
       const reply = response.first().content;
 
       if (reply.includes(",")) {
@@ -44,11 +44,11 @@ module.exports = {
         for (let song of songs) {
           await message.client.commands
             .get("play")
-            .execute(message, [resultsEmbed.fields[parseInt(song) - 1].name]);
+            .execute(message, [resultsEmbed.fields[parseInt(song) - 1].name], guild);
         }
       } else {
         const choice = resultsEmbed.fields[parseInt(response.first()) - 1].name;
-        message.client.commands.get("play").execute(message, [choice]);
+        message.client.commands.get("play").execute(message, [choice], guild);
       }
 
       message.channel.activeCollector = false;

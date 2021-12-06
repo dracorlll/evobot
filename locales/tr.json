@@ -161,7 +161,9 @@
 		"disabled": "**devre dışı bırakıldı**",
 		"errorNotChannel": "Önce sesli sohbet kanalına girmelisiniz!",
 		"cooldownMessage": "`{name}` komutunu kullanmak için {time} saniye beklemelisiniz .",
-		"errorCommand": "Komutu gerçekleştirirken bir hata oluştu."
+		"errorCommand": "Komutu gerçekleştirirken bir hata oluştu.",
+		"rateLimit": "Denemeniz sona erdi. Lütfen kullanmaya devam etmek için bota abone olun. bot@discords.dev",
+		"expired": "Aboneliğinizin süresi doldu. Lütfen kullanmaya devam etmek için bota abone olun. bot@discords.dev"
 	},
 	"redeem": {
 		"description": "Redeem a code to subscription"
