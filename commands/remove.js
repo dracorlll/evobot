@@ -10,9 +10,15 @@ module.exports = {
   execute(message, args, guild) {
     const queue = message.client.queue.get(message.guild.id);
 
-    if (!queue) return message.channel.send(i18n.__({phrase: "remove.errorNotQueue", locale: guild.locale})).catch(console.error);
+    if (!queue) return message.channel.send(i18n.__({
+      phrase: "remove.errorNotQueue",
+      locale: guild.locale
+    })).catch(console.error);
     if (!canModifyQueue(message.member)) return i18n.__({phrase: "common.errorNotChannel", locale: guild.locale});
-    if (!args.length) return message.reply(i18n.__mf({phrase: "remove.usageReply", locale: guild.locale}, {prefix: message.client.prefix}));
+    if (!args.length) return message.reply(i18n.__mf({
+      phrase: "remove.usageReply",
+      locale: guild.locale
+    }, {prefix: guild.prefix}));
 
     const arguments = args.join("");
     const songs = arguments.split(",").map((arg) => parseInt(arg));
@@ -40,7 +46,7 @@ module.exports = {
       );
     } else {
       console.log("we got the last one");
-      return message.reply(i18n.__mf({phrase: "remove.usageReply", locale: guild.locale}, {prefix: message.client.prefix}));
+      return message.reply(i18n.__mf({phrase: "remove.usageReply", locale: guild.locale}, {prefix: guild.prefix}));
     }
   }
 };

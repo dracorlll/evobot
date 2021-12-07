@@ -23,7 +23,10 @@ module.exports = {
           usedBy: message.guild.id
         }
       })
-      await Guild.updateOne({guildID: message.guild.id}, {expireTime: Date.now() + redeem.time * MONTH})
+      await Guild.updateOne({guildID: message.guild.id}, {
+        expireTime: Date.now() + redeem.time * MONTH,
+        maxPlaylistSize: 100
+      })
       embedRedeem
         .setTitle(i18n.__({phrase: "redeem.title", locale: guild.locale}))
         .setDescription(i18n.__mf({phrase: "redeem.success", locale: guild.locale}, {

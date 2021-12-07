@@ -8,11 +8,17 @@ module.exports = {
   execute(message, args, guild) {
     if (!args.length || isNaN(args[0]))
       return message
-        .reply(i18n.__mf({phrase: "skipto.usageReply", locale: guild.locale}, {prefix: message.client.prefix, name: module.exports.name}))
+        .reply(i18n.__mf({phrase: "skipto.usageReply", locale: guild.locale}, {
+          prefix: guild.prefix,
+          name: module.exports.name
+        }))
         .catch(console.error);
 
     const queue = message.client.queue.get(message.guild.id);
-    if (!queue) return message.channel.send(i18n.__({phrase: "skipto.errorNotQueue", locale: guild.locale})).catch(console.error);
+    if (!queue) return message.channel.send(i18n.__({
+      phrase: "skipto.errorNotQueue",
+      locale: guild.locale
+    })).catch(console.error);
     if (!canModifyQueue(message.member)) return i18n.__({phrase: "common.errorNotChannel", locale: guild.locale});
     if (args[0] > queue.songs.length)
       return message
@@ -22,7 +28,7 @@ module.exports = {
     queue.playing = true;
 
     if (queue.loop) {
-      for (let i = 0;i < args[0] - 2;i++) {
+      for (let i = 0; i < args[0] - 2; i++) {
         queue.songs.push(queue.songs.shift());
       }
     } else {

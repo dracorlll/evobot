@@ -8,12 +8,21 @@ module.exports = {
   description: "move.description",
   execute(message, args, guild) {
     const queue = message.client.queue.get(message.guild.id);
-    if (!queue) return message.channel.send(i18n.__({phrase: "move.errorNotQueue", locale: guild.locale})).catch(console.error);
+    if (!queue) return message.channel.send(i18n.__({
+      phrase: "move.errorNotQueue",
+      locale: guild.locale
+    })).catch(console.error);
     if (!canModifyQueue(message.member)) return;
 
-    if (!args.length) return message.reply(i18n.__mf({phrase: "move.usagesReply", locale: guild.locale}, {prefix: message.client.prefix}));
+    if (!args.length) return message.reply(i18n.__mf({
+      phrase: "move.usagesReply",
+      locale: guild.locale
+    }, {prefix: guild.prefix}));
     if (isNaN(args[0]) || args[0] <= 1)
-      return message.reply(i18n.__mf({phrase: "move.usagesReply", locale: guild.locale}, {prefix: message.client.prefix}));
+      return message.reply(i18n.__mf({
+        phrase: "move.usagesReply",
+        locale: guild.locale
+      }, {prefix: message.client.prefix}));
 
     let song = queue.songs[args[0] - 1];
 

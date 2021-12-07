@@ -175,6 +175,10 @@
     "description": "Shows the subscription duration",
     "result": "Your subscription will expire in {time}"
   },
+  "prefix": {
+    "description": "Shows the prefix character",
+    "result": "Now you can use the bot by typing {prefix}command"
+  },
   "language": {
     "placeholder": "Select a language",
     "description": "Change the language of the bot",

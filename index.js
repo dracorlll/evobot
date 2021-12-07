@@ -4,7 +4,7 @@
 const {Client, Collection} = require("discord.js")
 const {readdirSync} = require("fs")
 const {join} = require("path")
-const {TOKEN, PREFIX} = require("./util/Util")
+let {TOKEN} = require("./util/Util")
 const i18n = require("./util/i18n")
 const {Guild} = require("./models/index")
 const disbut = require('discord-buttons')
@@ -18,7 +18,6 @@ const client = new Client({
 disbut(client)
 client.login(TOKEN)
 client.commands = new Collection()
-client.prefix = PREFIX
 client.queue = new Map()
 const cooldowns = new Collection()
 const escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
@@ -28,7 +27,7 @@ const escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
  */
 client.on("ready", () => {
   console.log(`${client.user.username} ready!`)
-  client.user.setActivity(`${PREFIX}help and ${PREFIX}play`, {type: "LISTENING"})
+  client.user.setActivity(`support@discords.tech`, {type: "LISTENING"})
 })
 client.on("warn", (info) => console.log(info))
 client.on("error", console.error)
@@ -46,7 +45,10 @@ client.on("message", async (message) => {
   if (message.author.bot) return
   if (!message.guild) return
 
-  const prefixRegex = new RegExp(`^(<@!?${client.user.id}>|${escapeRegex(PREFIX)})\\s*`)
+  let guild = await Guild.findOne({guildID: message.guild.id})
+  if (!guild) guild = await guildCreate(message.guild)
+
+  const prefixRegex = new RegExp(`^(<@!?${client.user.id}>|${escapeRegex(guild.prefix)})\\s*`)
   if (!prefixRegex.test(message.content)) return
 
   const [, matchedPrefix] = message.content.match(prefixRegex)
@@ -62,9 +64,6 @@ client.on("message", async (message) => {
   if (!cooldowns.has(command.name)) {
     cooldowns.set(command.name, new Collection())
   }
-
-  let guild = await Guild.findOne({guildID: message.guild.id})
-  if (!guild) guild = await guildCreate(message.guild)
 
   const now = Date.now()
   const timestamps = cooldowns.get(command.name)
@@ -86,7 +85,7 @@ client.on("message", async (message) => {
 
   timestamps.set(message.author.id, now)
   setTimeout(() => timestamps.delete(message.author.id), cooldownAmount)
-
+  console.log(new Date(guild.createdAt))
   try {
     // komut redeem mi kontrol et değilse expire time ve ratelimit kontrolü yap
     if (command.name === "redeem") command.execute(message, args, guild)
@@ -122,6 +121,8 @@ const guildCreate = async guild => {
     owner: guild.ownerID,
     expireTime: null,
     locale: "en",
+    prefix: "!",
+    maxPlaylistSize: 10,
     pruning: false
   })
 }

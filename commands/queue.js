@@ -12,10 +12,13 @@ module.exports = {
       return message.reply(i18n.__({phrase: "queue.missingPermissionMessage", locale: guild.locale}));
 
     const queue = message.client.queue.get(message.guild.id);
-    if (!queue || !queue.songs.length) return message.channel.send(i18n.__({phrase: "queue.errorNotQueue", locale: guild.locale}));
+    if (!queue || !queue.songs.length) return message.channel.send(i18n.__({
+      phrase: "queue.errorNotQueue",
+      locale: guild.locale
+    }));
 
     let currentPage = 0;
-    const embeds = generateQueueEmbed(message, queue.songs);
+    const embeds = generateQueueEmbed(message, queue.songs, guild);
 
     const queueEmbed = await message.channel.send(
       `**${i18n.__mf({phrase: "queue.currentPage", locale: guild.locale})} ${currentPage + 1}/${embeds.length}**`,
@@ -41,7 +44,10 @@ module.exports = {
           if (currentPage < embeds.length - 1) {
             currentPage++;
             queueEmbed.edit(
-              i18n.__mf({phrase: "queue.currentPage", locale: guild.locale}, {page: currentPage + 1, length: embeds.length}),
+              i18n.__mf({phrase: "queue.currentPage", locale: guild.locale}, {
+                page: currentPage + 1,
+                length: embeds.length
+              }),
               embeds[currentPage]
             );
           }
@@ -49,7 +55,10 @@ module.exports = {
           if (currentPage !== 0) {
             --currentPage;
             queueEmbed.edit(
-              i18n.__mf({phrase: "queue.currentPage", locale: guild.locale}, {page: currentPage + 1, length: embeds.length}),
+              i18n.__mf({phrase: "queue.currentPage", locale: guild.locale}, {
+                page: currentPage + 1,
+                length: embeds.length
+              }),
               embeds[currentPage]
             );
           }
@@ -66,11 +75,11 @@ module.exports = {
   }
 };
 
-function generateQueueEmbed(message, queue) {
+function generateQueueEmbed(message, queue, guild) {
   let embeds = [];
   let k = 10;
 
-  for (let i = 0;i < queue.length;i += 10) {
+  for (let i = 0; i < queue.length; i += 10) {
     const current = queue.slice(i, k);
     let j = i;
     k += 10;
@@ -82,7 +91,11 @@ function generateQueueEmbed(message, queue) {
       .setThumbnail(message.guild.iconURL())
       .setColor("#F8AA2A")
       .setDescription(
-        i18n.__mf({phrase: "queue.embedCurrentSong", locale: guild.locale}, {title: queue[0].title, url: queue[0].url, info: info})
+        i18n.__mf({phrase: "queue.embedCurrentSong", locale: guild.locale}, {
+          title: queue[0].title,
+          url: queue[0].url,
+          info: info
+        })
       )
       .setTimestamp();
     embeds.push(embed);

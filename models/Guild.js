@@ -24,6 +24,14 @@ const guildSchema = new mongoose.Schema(
     pruning: {
       type: Boolean,
       default: false
+    },
+    prefix: {
+      type: String,
+      default: "en"
+    },
+    maxPlaylistSize: {
+      type: Number,
+      default: 10
     }
   },
   {
