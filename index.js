@@ -85,7 +85,6 @@ client.on("message", async (message) => {
 
   timestamps.set(message.author.id, now)
   setTimeout(() => timestamps.delete(message.author.id), cooldownAmount)
-  console.log(new Date(guild.createdAt))
   try {
     // komut redeem mi kontrol et değilse expire time ve ratelimit kontrolü yap
     if (command.name === "redeem") command.execute(message, args, guild)

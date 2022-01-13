@@ -162,7 +162,7 @@
     "errorNotChannel": "You need to join a voice channel first!",
     "cooldownMessage": "please wait {time} more second(s) before reusing the `{name}` command.",
     "errorCommand": "There was an error executing that command.",
-    "rateLimit": "Your trial has ended. Please subscribe to the bot to continue using it. bot@discords.dev",
+    "rateLimit": "Your trial has ended. Please subscribe to the bot to continue using it. support@discords.tech",
     "expired": "Your subscription has expired. Please subscribe to the bot to continue using it. bot@discords.dev"
   },
   "redeem": {
